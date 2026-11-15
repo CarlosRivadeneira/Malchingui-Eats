@@ -1,0 +1,38 @@
+:root {
+  --color-primary: #F26B1D;
+  --color-primary-hover: #D95A12;
+  --color-primary-text: #B5470A;
+  --color-accent: #FFC23C;
+  --color-ink: #2E1B10;
+  --color-ink-soft: #6B4A36;
+  --color-bg: #FFF7EE;
+  --color-surface: #FFFFFF;
+  --color-border: #F0DCC8;
+  --color-on-primary: #FFFFFF;
+  --color-on-dark-accent: #FF8A45;
+  --color-success: #2E7D32;
+  --color-error: #C62828;
+  --font-display: "Fredoka", "Nunito", system-ui, sans-serif;
+  --font-body: "Nunito", system-ui, sans-serif;
+  --text-display: 40px;
+  --text-title: 28px;
+  --text-subtitle: 22px;
+  --text-body: 16px;
+  --text-body-lg: 18px;
+  --text-label: 14px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --radius-icon: 25%;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --shadow-card: 0 6px 20px rgba(46, 27, 16, 0.10);
+  --shadow-float: 0 10px 30px rgba(46, 27, 16, 0.16);
+}

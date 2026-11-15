@@ -1,69 +1,75 @@
-import Image from "next/image";
+"use client";
+
+import { useMemo, useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { ArrowRight, Bike, CakeSlice, CheckCircle2, ChevronDown, Clock3, Drumstick, Eye, EyeOff, Heart, Home as HomeIcon, KeyRound, LogIn, MapPin, Pizza, Plus, Search, ShoppingBag, Soup, Star, Store, Truck, Utensils, Beef } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
+
+type Restaurant = { name: string; category: string; rating: string; time: string; delivery: string; color: string; emoji: string; badge?: string };
+type Dish = { name: string; restaurant: string; price: number; emoji: string; color: string };
+type Category = { name: string; icon: LucideIcon };
+type Section = "auth" | "customer" | "merchant" | "courier";
+
+const categories: Category[] = [
+  { name: "Todos", icon: Utensils }, { name: "Hamburguesas", icon: Beef }, { name: "Pizza", icon: Pizza },
+  { name: "Comida local", icon: Soup }, { name: "Pollo", icon: Drumstick }, { name: "Postres", icon: CakeSlice },
+];
+const restaurants: Restaurant[] = [
+  { name: "La Esquina de Mami", category: "Comida local", rating: "4.9", time: "20–30 min", delivery: "$1.50 envío", color: "coral", emoji: "🍲", badge: "Favorito local" },
+  { name: "Brasa & Pan", category: "Hamburguesas", rating: "4.8", time: "25–35 min", delivery: "Envío gratis", color: "mustard", emoji: "🍔", badge: "Top del día" },
+  { name: "Pizzería La Plaza", category: "Pizza", rating: "4.7", time: "30–40 min", delivery: "$1.00 envío", color: "sage", emoji: "🍕" },
+  { name: "El Pollo Dorado", category: "Pollo", rating: "4.6", time: "20–30 min", delivery: "$1.25 envío", color: "peach", emoji: "🍗" },
+];
+const dishes: Dish[] = [
+  { name: "Lomo saltado de la casa", restaurant: "La Esquina de Mami", price: 8.5, emoji: "🥘", color: "dish-coral" },
+  { name: "Doble smash con queso", restaurant: "Brasa & Pan", price: 7.25, emoji: "🍔", color: "dish-mustard" },
+  { name: "Pizza de la huerta", restaurant: "Pizzería La Plaza", price: 9, emoji: "🍕", color: "dish-sage" },
+];
+
+const roles: { id: Section; label: string; description: string; icon: LucideIcon }[] = [
+  { id: "customer", label: "Pedir comida", description: "Encuentra algo rico cerca de ti", icon: ShoppingBag },
+  { id: "merchant", label: "Vender en la app", description: "Haz crecer tu local con nosotros", icon: Store },
+  { id: "courier", label: "Repartir pedidos", description: "Gana llevando alegría", icon: Truck },
+];
+
+function AuthScreen({ onEnter, onRegister }: { onEnter: () => void; onRegister: (section: "merchant" | "courier") => void }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  if (submitted) return <section className="auth-success"><CheckCircle2 size={48} /><p>¡Qué gusto verte de nuevo!</p><span>Tu cuenta está lista. Ya puedes descubrir algo rico para hoy.</span><button className="primary-button" type="button" onClick={onEnter}>Entrar a Malchingui Eats <ArrowRight size={20} /></button></section>;
+
+  return <section className="auth-layout"><div className="auth-welcome"><BrandLogo size={72} /><p className="kicker">Sabor de casa, hasta tu puerta</p><h1>Tu próximo antojo empieza aquí.</h1><p>Entra para pedir tus favoritos, seguir tus pedidos y disfrutar lo mejor de tu barrio.</p><div className="auth-trust"><CheckCircle2 size={20} /><span>Comida local, atención cercana y entregas sencillas.</span></div></div><form className="auth-card" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}><div className="form-heading"><p className="kicker">Bienvenido de vuelta</p><h2>Inicia sesión</h2><p>Ingresa tus datos para continuar.</p></div><label className="auth-field">Correo electrónico<div className="input-with-icon"><LogIn size={19} /><input type="email" name="email" placeholder="tu@correo.com" autoComplete="email" required /></div></label><label className="auth-field">Contraseña<div className="input-with-icon"><KeyRound size={19} /><input type={showPassword ? "text" : "password"} name="password" placeholder="Tu contraseña" autoComplete="current-password" minLength={6} required /><button className="password-toggle" type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}>{showPassword ? <EyeOff size={19} /> : <Eye size={19} />}</button></div></label><div className="auth-options"><label><input type="checkbox" /> Recordarme</label><button type="button">¿Olvidaste tu contraseña?</button></div><button className="primary-button auth-submit" type="submit">Iniciar sesión <ArrowRight size={20} /></button><p className="auth-divider"><span>o continúa como</span></p><div className="auth-register-links"><button type="button" onClick={() => onEnter()}>Cliente nuevo</button><button type="button" onClick={() => onRegister("merchant")}>Tengo un local</button><button type="button" onClick={() => onRegister("courier")}>Quiero repartir</button></div></form></section>;
+}
+
+function RegistrationSuccess({ type }: { type: "merchant" | "courier" }) {
+  return <div className="registration-success"><CheckCircle2 size={42} /><p>{type === "merchant" ? "¡Gracias por querer vender con nosotros!" : "¡Gracias por querer repartir con nosotros!"}</p><span>Recibimos tus datos. Nuestro equipo se pondrá en contacto contigo muy pronto.</span></div>;
+}
+
+function MerchantRegistration() {
+  const [submitted, setSubmitted] = useState(false);
+  if (submitted) return <RegistrationSuccess type="merchant" />;
+  return <section className="role-layout"><div className="role-intro"><span className="role-icon"><Store size={30} /></span><p className="kicker">Tu local, más cerca</p><h1>Lleva el sabor de tu negocio a más hogares.</h1><p>Únete a Malchingui Eats y recibe pedidos de personas que buscan comida hecha con cariño.</p><ul className="benefit-list"><li><CheckCircle2 size={20} /> Llega a nuevos clientes de tu zona</li><li><CheckCircle2 size={20} /> Administra tus pedidos desde un solo lugar</li><li><CheckCircle2 size={20} /> Recibe acompañamiento para empezar</li></ul></div><form className="registration-form" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}><div className="form-heading"><p className="kicker">Registro de local</p><h2>Cuéntanos sobre tu negocio</h2><p>Completa estos datos y te contactaremos para revisar tu solicitud.</p></div><div className="form-grid"><label>Nombre del local<input name="businessName" placeholder="Ej. La Esquina de Mami" required /></label><label>Tipo de comida<select name="category" defaultValue="" required><option value="" disabled>Selecciona una categoría</option><option>Comida local</option><option>Hamburguesas</option><option>Pizza</option><option>Pollo</option><option>Postres</option></select></label><label>Tu nombre<input name="ownerName" placeholder="Nombre y apellido" required /></label><label>Teléfono<input name="phone" type="tel" placeholder="099 000 0000" required /></label><label className="full-field">Correo electrónico<input name="email" type="email" placeholder="tu@correo.com" required /></label><label className="full-field">Dirección del local<input name="address" placeholder="Calle, número y referencia" required /></label></div><button className="primary-button form-submit" type="submit">Enviar solicitud <ArrowRight size={20} /></button><small className="form-note">Al enviar aceptas que te contactemos para completar el registro.</small></form></section>;
+}
+
+function CourierRegistration() {
+  const [submitted, setSubmitted] = useState(false);
+  if (submitted) return <RegistrationSuccess type="courier" />;
+  return <section className="role-layout"><div className="role-intro courier-intro"><span className="role-icon"><Bike size={30} /></span><p className="kicker">Tu tiempo, tus reglas</p><h1>Reparte a tu ritmo y sé parte del barrio.</h1><p>Conecta con personas que esperan su comida y genera ingresos con cada entrega.</p><div className="courier-stat"><strong>20–30 min</strong><span>Es el tiempo promedio de una entrega local</span></div></div><form className="registration-form" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}><div className="form-heading"><p className="kicker">Registro de repartidor</p><h2>Empecemos por conocerte</h2><p>Déjanos tus datos y te explicaremos los siguientes pasos.</p></div><div className="form-grid"><label>Nombre completo<input name="name" placeholder="Nombre y apellido" required /></label><label>Teléfono<input name="phone" type="tel" placeholder="099 000 0000" required /></label><label className="full-field">Correo electrónico<input name="email" type="email" placeholder="tu@correo.com" required /></label><label>¿Cómo repartirás?<select name="vehicle" defaultValue="" required><option value="" disabled>Selecciona una opción</option><option>Bicicleta</option><option>Motocicleta</option><option>Auto</option></select></label><label>Zona preferida<select name="zone" defaultValue="" required><option value="" disabled>Selecciona una zona</option><option>Malchingui</option><option>Tabacundo</option><option>Cayambe</option></select></label></div><button className="primary-button form-submit" type="submit">Quiero repartir <ArrowRight size={20} /></button><small className="form-note">Te contactaremos para validar tus datos y coordinar una inducción.</small></form></section>;
+}
+
+function CustomerOrdering() {
+  const [activeCategory, setActiveCategory] = useState("Todos");
+  const [query, setQuery] = useState("");
+  const [cart, setCart] = useState<Dish[]>([]);
+  const filteredRestaurants = useMemo(() => restaurants.filter((restaurant) => { const matchesCategory = activeCategory === "Todos" || restaurant.category === activeCategory; const searchText = `${restaurant.name} ${restaurant.category}`.toLowerCase(); return matchesCategory && searchText.includes(query.toLowerCase()); }), [activeCategory, query]);
+  const addToCart = (dish: Dish) => setCart((current) => [...current, dish]);
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  return <><section className="hero-section"><div className="hero-copy"><p className="kicker">Tu comida, a tu ritmo</p><h1>Lo bueno de<br /><span>sentirse en casa.</span></h1><p className="hero-description">Descubre sabores de tu barrio y recibe tus favoritos sin salir de casa.</p><div className="search-box"><Search size={22} aria-hidden="true" /><label className="sr-only" htmlFor="food-search">Buscar restaurantes o comida</label><input id="food-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="¿Qué se te antoja hoy?" /><button type="button" className="primary-button">Buscar</button></div></div><div className="hero-art" aria-label="Plato preparado con cariño" role="img"><div className="sun-disc" /><span className="art-leaf leaf-one">✦</span><span className="art-leaf leaf-two">✦</span><div className="plate-shadow" /><div className="hero-bowl">🍜</div><div className="floating-note">Hecho<br /><strong>con cariño</strong> <Heart size={16} fill="currentColor" /></div></div></section><section className="content-area"><div className="section-heading"><div><p className="kicker">Elige tu mood</p><h2>¿Qué te provoca?</h2></div><button className="text-button" type="button">Ver todo <ArrowRight size={17} /></button></div><div className="category-row" role="tablist" aria-label="Categorías de comida">{categories.map(({ name, icon: Icon }) => <button key={name} className={`category-pill ${activeCategory === name ? "active" : ""}`} onClick={() => setActiveCategory(name)} role="tab" aria-selected={activeCategory === name}><Icon size={20} strokeWidth={2} />{name}</button>)}</div><div className="section-heading restaurant-heading"><div><p className="kicker">Cerca de ti</p><h2>Restaurantes para hoy</h2></div><button className="sort-control" type="button"><span>Ordenar:</span> Recomendados <ChevronDown size={16} /></button></div><div className="restaurant-grid">{filteredRestaurants.map((restaurant) => <article className="restaurant-card" key={restaurant.name}><div className={`restaurant-image ${restaurant.color}`}>{restaurant.badge && <span className="card-badge">{restaurant.badge}</span>}<button className="favorite-button" type="button" aria-label={`Guardar ${restaurant.name}`}><Heart size={19} /></button><span className="food-emoji" aria-hidden="true">{restaurant.emoji}</span></div><div className="restaurant-info"><div className="restaurant-title-row"><h3>{restaurant.name}</h3><span className="rating"><Star size={14} fill="currentColor" /> {restaurant.rating}</span></div><p><Clock3 size={14} /> {restaurant.category} <span>·</span> {restaurant.time}</p><span className="delivery-label"><Bike size={14} /> {restaurant.delivery}</span></div></article>)}</div>{filteredRestaurants.length === 0 && <div className="empty-state"><BrandLogo size={48} /><p>No encontramos lugares con ese antojo.</p><span>Prueba otra búsqueda y seguimos buscando contigo.</span></div>}<div className="section-heading popular-heading"><div><p className="kicker">Los más pedidos</p><h2>Favoritos de la comunidad</h2></div><button className="text-button" type="button">Ver menú <ArrowRight size={17} /></button></div><div className="dish-grid">{dishes.map((dish) => <article className="dish-card" key={dish.name}><div className={`dish-image ${dish.color}`}><span aria-hidden="true">{dish.emoji}</span></div><div className="dish-info"><h3>{dish.name}</h3><p>{dish.restaurant}</p><strong>${dish.price.toFixed(2)}</strong></div><button className="add-button" type="button" onClick={() => addToCart(dish)} aria-label={`Añadir ${dish.name} al carrito`}><Plus size={21} /></button></article>)}</div></section><aside className={`cart-drawer ${cart.length ? "has-items" : ""}`} aria-live="polite"><div className="cart-topline"><span><ShoppingBag size={17} /> Tu pedido</span><span className="cart-count">{cart.length}</span></div>{cart.length === 0 ? <p className="cart-empty">Agrega un favorito y aparecerá aquí.</p> : <><div className="cart-items">{cart.slice(-2).map((item, index) => <div className="cart-item" key={`${item.name}-${index}`}><span>{item.emoji}</span><div><strong>{item.name}</strong><small>${item.price.toFixed(2)}</small></div></div>)}</div><div className="cart-total"><span>Total estimado</span><strong>${total.toFixed(2)}</strong></div><button className="primary-button checkout-button" type="button">Continuar al checkout <ArrowRight size={18} /></button></>}</aside></>;
+}
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+  const [section, setSection] = useState<Section>("auth");
+  const showNavigation = section !== "auth";
+  return <main className={`app-shell ${section === "auth" ? "auth-view" : ""}`}><nav className="topbar" aria-label="Navegación principal"><button className="brand-button" type="button" onClick={() => setSection("customer")} aria-label="Ir al inicio"><BrandLogo size={40} /></button><button className="delivery-location" type="button" aria-label="Cambiar dirección de entrega"><MapPin size={22} /><span><small>Entregar en</small><strong>Malchingui, Pichincha <ChevronDown size={16} /></strong></span></button><div className="nav-actions"><button className="icon-button" type="button" aria-label="Buscar" onClick={() => setSection("customer")}><Search size={22} /></button><button className="profile-button" type="button" aria-label="Abrir perfil" onClick={() => setSection("customer")}>LM</button></div></nav>{showNavigation && <section className="role-switcher" aria-label="Elige cómo usar Malchingui Eats">{roles.map(({ id, label, description, icon: Icon }) => <button key={id} type="button" className={`role-tab ${section === id ? "active" : ""}`} onClick={() => setSection(id)}><span className="role-tab-icon"><Icon size={21} /></span><span><strong>{label}</strong><small>{description}</small></span></button>)}</section>}{section === "auth" ? <AuthScreen onEnter={() => setSection("customer")} onRegister={setSection} /> : section === "customer" ? <CustomerOrdering /> : section === "merchant" ? <MerchantRegistration /> : <CourierRegistration />}{showNavigation && <nav className="bottom-nav" aria-label="Navegación móvil"><button className={`bottom-nav-item ${section === "customer" ? "active" : ""}`} type="button" onClick={() => setSection("customer")}><HomeIcon size={21} /><span>Pedir</span></button><button className={`bottom-nav-item ${section === "merchant" ? "active" : ""}`} type="button" onClick={() => setSection("merchant")}><Store size={21} /><span>Vender</span></button><button className={`bottom-nav-item ${section === "courier" ? "active" : ""}`} type="button" onClick={() => setSection("courier")}><Truck size={21} /><span>Repartir</span></button></nav>}</main>;
 }
